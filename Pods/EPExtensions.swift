@@ -12,16 +12,10 @@ import Foundation
 extension String {
     subscript(r: Range<Int>) -> String? {
         get {
-            let stringCount = self.characters.count as Int
-            if (stringCount < r.endIndex) || (stringCount < r.startIndex) {
-                return nil
-            }
-            let startIndex = self.startIndex.advancedBy(r.startIndex)
-            let endIndex = self.startIndex.advancedBy(r.endIndex - r.startIndex)
-            return self[Range(start: startIndex, end: endIndex)]
+            return self[(startIndex.advancedBy(r.startIndex) ..< startIndex.advancedBy(r.startIndex.distanceTo(r.endIndex)))]
         }
     }
-    
+
     func containsAlphabets() -> Bool {
         //Checks if all the characters inside the string are alphabets
         let set = NSCharacterSet.letterCharacterSet()
