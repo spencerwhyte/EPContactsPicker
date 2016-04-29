@@ -12,7 +12,11 @@ import Foundation
 extension String {
     subscript(r: Range<Int>) -> String? {
         get {
-            return self[(startIndex.advancedBy(r.startIndex) ..< startIndex.advancedBy(r.startIndex.distanceTo(r.endIndex)))]
+            if r.startIndex >= 0 && r.endIndex < characters.count {
+                return self[(startIndex.advancedBy(r.startIndex) ..< startIndex.advancedBy(r.startIndex.distanceTo(r.endIndex)))]
+            } else {
+                return nil
+            }
         }
     }
 

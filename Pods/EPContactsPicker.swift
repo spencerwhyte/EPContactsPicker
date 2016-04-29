@@ -270,7 +270,7 @@ public class EPContactsPicker: UITableViewController, UISearchResultsUpdating, U
             tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: index),
                                              atScrollPosition: UITableViewScrollPosition.Top,
                                              animated: false)
-            return EPGlobalConstants.Arrays.alphabets.indexOf(title)!
+            return sortedContactKeys.indexOf(title)!
         }
     }
     
