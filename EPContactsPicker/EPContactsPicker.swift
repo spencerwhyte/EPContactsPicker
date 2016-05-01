@@ -15,7 +15,7 @@ import Contacts
     optional    func epContactPicker(_: EPContactsPicker, didCancel error: NSError)
     optional    func epContactPicker(_: EPContactsPicker, didSelectContact contact: EPContact)
     optional    func epContactPicker(_: EPContactsPicker, didSelectMultipleContacts contacts: [EPContact])
-
+    optional    func epContactPicker(_: EPContactsPicker, shouldDisplayContact contact: EPContact) -> Bool
 }
 
 typealias ContactsHandler = (contacts : [CNContact] , error : NSError?) -> Void
@@ -160,6 +160,14 @@ public class EPContactsPicker: UITableViewController, UISearchResultsUpdating, U
                 
                 do {
                     try contactsStore?.enumerateContactsWithFetchRequest(contactFetchRequest, usingBlock: { (contact, stop) -> Void in
+                        
+                        // Make sure that the delegate says that it's okay to ahve this contact in the list
+                        guard let shouldDisplayContact = self.contactDelegate?.epContactPicker?(self, shouldDisplayContact: EPContact(contact: contact))
+                            where shouldDisplayContact
+                        else{
+                            return // Don't add the contact!
+                        }
+                        
                         //Ordering contacts based on alphabets in firstname
                         contactsArray.append(contact)
                         var key: String = "#"
@@ -317,6 +325,19 @@ public class EPContactsPicker: UITableViewController, UISearchResultsUpdating, U
             do {
                 filteredContacts = try store.unifiedContactsMatchingPredicate(predicate,
                     keysToFetch: allowedContactKeys())
+                
+           
+                filteredContacts = filteredContacts.filter({ (contact:CNContact) -> Bool in
+                    // Make sure that the delegate says that it's okay to ahve this contact in the list
+                    guard let shouldDisplayContact = self.contactDelegate?.epContactPicker?(self, shouldDisplayContact: EPContact(contact: contact))
+                        where shouldDisplayContact
+                        else{
+                             return false// Don't add the contact!
+                    }
+                    return true
+                })
+                
+                
                 print("\(filteredContacts.count) count")
                 self.tableView.reloadData()
             }
